@@ -6,7 +6,9 @@ import dash_mantine_components as dmc                                   # pip in
 
 # Incorporate data
 df = pd.read_csv(r'./org-allmetrics.csv')
+df2 = pd.read_csv(r'./country-altmetric.csv')
 print(df)
+print(df2)
 
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
@@ -23,12 +25,28 @@ app.layout = dmc.Container([
         ),
     dmc.Grid([
         dmc.Col([
-            dash_table.DataTable(data=df.to_dict('records'), page_size=12, style_table={'overflow': 'auto'})
+            dash_table.DataTable(data=df.to_dict('records'), page_size=12, style_table={'overflow': 'auto'}, sort_action='native')
         ], span=6),
         dmc.Col([
             dcc.Graph(figure={}, id='graph-placeholder')
         ], span=6),
     ]),
+html.Div([
+    html.H1("COVID-19 Research Impact by Country"),
+    dcc.Graph(
+        id='choropleth-map',
+        figure=px.choropleth(
+            data_frame=df2,
+            locations='country',  # This should match the column name in your DataFrame
+            locationmode='country names',  # Set the location mode based on your data
+            color='altmetric',  # This sets the color value based on your data
+            hover_name='country',  # Hover information based on your data
+            title='Global Reach of COVID-19 Research',
+            height=700,
+            width=1200
+        )
+    )
+])
 
 ], fluid=True)
 
@@ -38,7 +56,7 @@ app.layout = dmc.Container([
     Input(component_id='my-dmc-radio-item', component_property='value')
 )
 def update_graph(col_chosen):
-    fig = px.histogram(df, x='Country', y=col_chosen, histfunc='sum')
+    fig = px.histogram(df, x='Country', y=col_chosen, histfunc='sum').update_xaxes(categoryorder='total descending')
     return fig
 
 # Run the App
