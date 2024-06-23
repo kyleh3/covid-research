@@ -10,6 +10,8 @@ df2 = pd.read_csv(r'./country-altmetric.csv')
 print(df)
 print(df2)
 
+df[['Publications', 'Citations', 'Altmetric']] = df[['Publications', 'Citations', 'Altmetric']].apply(pd.to_numeric)
+
 # Initialize the app - incorporate a Dash Mantine theme
 external_stylesheets = [dmc.theme.DEFAULT_COLORS]
 app = Dash(external_stylesheets=external_stylesheets)
@@ -61,4 +63,4 @@ def update_graph(col_chosen):
 
 # Run the App
 if __name__ == '__main__':
-    app.run_server(debug=True, host='0.0.0.0')
+     app.run_server(debug=True, host='0.0.0.0')
